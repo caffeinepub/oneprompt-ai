@@ -1,10 +1,11 @@
+import { AdminPanel } from "@/components/AdminPanel";
 import { CountUp } from "@/components/CountUp";
 import { Navbar } from "@/components/Navbar";
 import { WaitlistModal } from "@/components/WaitlistModal";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Toaster } from "@/components/ui/sonner";
-import { useAddEntry, useWaitlistCount } from "@/hooks/useQueries";
+import { useWaitlistCount } from "@/hooks/useQueries";
 import {
   ArrowRight,
   BarChart3,
@@ -14,7 +15,6 @@ import {
   ClipboardList,
   GitBranch,
   Globe,
-  Loader2,
   Lock,
   Shield,
   Users,
@@ -98,37 +98,42 @@ const TICKER_ITEMS = [
 
 export default function App() {
   const [modalOpen, setModalOpen] = useState(false);
+  const [adminOpen, setAdminOpen] = useState(false);
   const [ctaEmail, setCtaEmail] = useState("");
-  const [ctaSubmitted, setCtaSubmitted] = useState(false);
-  const addEntry = useAddEntry();
+  const [initialEmail, setInitialEmail] = useState("");
 
   const { data: waitlistCount } = useWaitlistCount();
   const count = Number(waitlistCount ?? BigInt(0));
   const spotsRemaining = Math.max(0, MAX_SPOTS - count);
 
-  const openModal = () => setModalOpen(true);
+  const openModal = (prefillEmail?: string) => {
+    setInitialEmail(prefillEmail ?? "");
+    setModalOpen(true);
+  };
 
-  const handleCtaSubmit = async (e: React.FormEvent) => {
+  // CTA bottom form: collect email, open modal with it pre-filled
+  const handleCtaSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!ctaEmail.trim()) return;
-    try {
-      await addEntry.mutateAsync(ctaEmail.trim().toLowerCase());
-      setCtaSubmitted(true);
-    } catch {
-      // handled via state
-    }
+    openModal(ctaEmail.trim().toLowerCase());
+    setCtaEmail("");
   };
 
   return (
     <div className="min-h-screen bg-background text-foreground font-body overflow-x-hidden">
       <Toaster />
-      <Navbar onJoinWaitlist={openModal} />
+      <Navbar
+        onJoinWaitlist={() => openModal()}
+        onAdminClick={() => setAdminOpen(true)}
+      />
       <WaitlistModal
         open={modalOpen}
         onClose={() => setModalOpen(false)}
         spotsRemaining={spotsRemaining}
         totalSpots={MAX_SPOTS}
+        initialEmail={initialEmail}
       />
+      <AdminPanel open={adminOpen} onClose={() => setAdminOpen(false)} />
 
       {/* ── Hero Section ────────────────────────────────── */}
       <section
@@ -212,7 +217,7 @@ export default function App() {
             <button
               type="button"
               data-ocid="hero.primary_button"
-              onClick={openModal}
+              onClick={() => openModal()}
               className="btn-glow-hero"
             >
               Reserve Early Access
@@ -442,7 +447,7 @@ export default function App() {
               </div>
 
               <Button
-                onClick={openModal}
+                onClick={() => openModal()}
                 className="btn-glow text-[oklch(0.07_0.02_250)] font-semibold mt-8 px-7 h-11"
               >
                 Get Early Access
@@ -478,7 +483,7 @@ export default function App() {
                 </div>
                 {/* Screenshot */}
                 <img
-                  src="/assets/generated/dashboard-preview.dim_1200x750.jpg"
+                  src="/assets/uploads/dashboard-preview.dim_1200x750-1.png"
                   alt="OnePrompt.ai dashboard"
                   className="w-full block"
                   loading="lazy"
@@ -641,64 +646,37 @@ export default function App() {
               priority onboarding when we launch.
             </p>
 
-            {/* CTA form card */}
-            {ctaSubmitted ? (
-              <motion.div
-                initial={{ opacity: 0, scale: 0.96 }}
-                animate={{ opacity: 1, scale: 1 }}
-                className="glass-card border border-[oklch(0.78_0.18_195_/_0.3)] rounded-2xl p-8 flex flex-col items-center gap-3"
+            {/* CTA form card — opens modal with email pre-filled */}
+            <div className="glass-card rounded-2xl p-6 border border-[oklch(0.35_0.05_240_/_0.35)] shadow-[0_0_60px_oklch(0.55_0.22_250_/_0.08)]">
+              <form
+                onSubmit={handleCtaSubmit}
+                className="flex flex-col sm:flex-row gap-3"
               >
-                <div className="relative">
-                  <div className="absolute inset-0 rounded-full bg-[oklch(0.78_0.18_195_/_0.25)] blur-2xl" />
-                  <CheckCircle2 className="relative h-14 w-14 text-[oklch(0.78_0.18_195)]" />
-                </div>
-                <p className="font-display text-2xl font-bold text-foreground">
-                  You're on the list!
-                </p>
-                <p
-                  className="font-body text-sm"
-                  style={{ color: "oklch(0.62 0.04 240)" }}
+                <Input
+                  data-ocid="cta.input"
+                  type="email"
+                  placeholder="your@company.com"
+                  value={ctaEmail}
+                  onChange={(e) => setCtaEmail(e.target.value)}
+                  required
+                  className="flex-1 bg-[oklch(0.1_0.015_260_/_0.9)] border-[oklch(0.28_0.04_255)] focus:border-[oklch(0.78_0.18_195)] h-12 font-body text-sm placeholder:text-muted-foreground"
+                  autoComplete="email"
+                />
+                <button
+                  type="submit"
+                  data-ocid="cta.submit_button"
+                  className="btn-glow-hero"
                 >
-                  We'll be in touch when your spot is ready.
-                </p>
-              </motion.div>
-            ) : (
-              <div className="glass-card rounded-2xl p-6 border border-[oklch(0.35_0.05_240_/_0.35)] shadow-[0_0_60px_oklch(0.55_0.22_250_/_0.08)]">
-                <form
-                  onSubmit={handleCtaSubmit}
-                  className="flex flex-col sm:flex-row gap-3"
-                >
-                  <Input
-                    data-ocid="cta.input"
-                    type="email"
-                    placeholder="your@company.com"
-                    value={ctaEmail}
-                    onChange={(e) => setCtaEmail(e.target.value)}
-                    required
-                    className="flex-1 bg-[oklch(0.1_0.015_260_/_0.9)] border-[oklch(0.28_0.04_255)] focus:border-[oklch(0.78_0.18_195)] h-12 font-body text-sm placeholder:text-muted-foreground"
-                    autoComplete="email"
-                  />
-                  <button
-                    type="submit"
-                    data-ocid="cta.submit_button"
-                    disabled={addEntry.isPending}
-                    className="btn-glow-hero disabled:opacity-60 disabled:cursor-not-allowed disabled:transform-none"
-                  >
-                    {addEntry.isPending ? (
-                      <Loader2 className="h-4 w-4 animate-spin" />
-                    ) : (
-                      <>Secure My Spot</>
-                    )}
-                  </button>
-                </form>
-                <p
-                  className="text-xs font-body mt-3 text-center"
-                  style={{ color: "oklch(0.48 0.04 240)" }}
-                >
-                  No credit card · No spam · Cancel anytime
-                </p>
-              </div>
-            )}
+                  Secure My Spot
+                </button>
+              </form>
+              <p
+                className="text-xs font-body mt-3 text-center"
+                style={{ color: "oklch(0.48 0.04 240)" }}
+              >
+                No credit card · No spam · Cancel anytime
+              </p>
+            </div>
           </motion.div>
         </div>
       </section>

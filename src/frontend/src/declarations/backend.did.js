@@ -8,28 +8,79 @@
 
 import { IDL } from '@icp-sdk/core/candid';
 
+export const UserRole = IDL.Variant({
+  'admin' : IDL.Null,
+  'user' : IDL.Null,
+  'guest' : IDL.Null,
+});
 export const Time = IDL.Int;
 export const WaitlistEntry = IDL.Record({
+  'name' : IDL.Text,
   'joinedAt' : Time,
   'email' : IDL.Text,
+  'company' : IDL.Opt(IDL.Text),
+});
+export const UserProfile = IDL.Record({
+  'name' : IDL.Text,
+  'email' : IDL.Opt(IDL.Text),
 });
 
 export const idlService = IDL.Service({
-  'addEntry' : IDL.Func([IDL.Text], [], []),
+  '_initializeAccessControlWithSecret' : IDL.Func([IDL.Text], [], []),
+  'addEntry' : IDL.Func([IDL.Text, IDL.Opt(IDL.Text), IDL.Text], [], []),
+  'assignCallerUserRole' : IDL.Func([IDL.Principal, UserRole], [], []),
   'getAllEntries' : IDL.Func([], [IDL.Vec(WaitlistEntry)], ['query']),
+  'getCallerUserProfile' : IDL.Func([], [IDL.Opt(UserProfile)], ['query']),
+  'getCallerUserRole' : IDL.Func([], [UserRole], ['query']),
+  'getOwner' : IDL.Func([], [IDL.Opt(IDL.Principal)], ['query']),
+  'getUserProfile' : IDL.Func(
+      [IDL.Principal],
+      [IDL.Opt(UserProfile)],
+      ['query'],
+    ),
   'getWaitlistCount' : IDL.Func([], [IDL.Nat], ['query']),
+  'isCallerAdmin' : IDL.Func([], [IDL.Bool], ['query']),
+  'isOwnerSet' : IDL.Func([], [IDL.Bool], ['query']),
+  'saveCallerUserProfile' : IDL.Func([UserProfile], [], []),
 });
 
 export const idlInitArgs = [];
 
 export const idlFactory = ({ IDL }) => {
+  const UserRole = IDL.Variant({
+    'admin' : IDL.Null,
+    'user' : IDL.Null,
+    'guest' : IDL.Null,
+  });
   const Time = IDL.Int;
-  const WaitlistEntry = IDL.Record({ 'joinedAt' : Time, 'email' : IDL.Text });
+  const WaitlistEntry = IDL.Record({
+    'name' : IDL.Text,
+    'joinedAt' : Time,
+    'email' : IDL.Text,
+    'company' : IDL.Opt(IDL.Text),
+  });
+  const UserProfile = IDL.Record({
+    'name' : IDL.Text,
+    'email' : IDL.Opt(IDL.Text),
+  });
   
   return IDL.Service({
-    'addEntry' : IDL.Func([IDL.Text], [], []),
+    '_initializeAccessControlWithSecret' : IDL.Func([IDL.Text], [], []),
+    'addEntry' : IDL.Func([IDL.Text, IDL.Opt(IDL.Text), IDL.Text], [], []),
+    'assignCallerUserRole' : IDL.Func([IDL.Principal, UserRole], [], []),
     'getAllEntries' : IDL.Func([], [IDL.Vec(WaitlistEntry)], ['query']),
+    'getCallerUserProfile' : IDL.Func([], [IDL.Opt(UserProfile)], ['query']),
+    'getCallerUserRole' : IDL.Func([], [UserRole], ['query']),
+    'getOwner' : IDL.Func([], [IDL.Opt(IDL.Principal)], ['query']),
+    'getUserProfile' : IDL.Func(
+        [IDL.Principal],
+        [IDL.Opt(UserProfile)],
+        ['query'],
+      ),
     'getWaitlistCount' : IDL.Func([], [IDL.Nat], ['query']),
+    'isCallerAdmin' : IDL.Func([], [IDL.Bool], ['query']),
+    'isOwnerSet' : IDL.Func([], [IDL.Bool], ['query']),
+    'saveCallerUserProfile' : IDL.Func([UserProfile], [], []),
   });
 };
 

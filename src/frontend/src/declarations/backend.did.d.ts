@@ -11,11 +11,29 @@ import type { IDL } from '@icp-sdk/core/candid';
 import type { Principal } from '@icp-sdk/core/principal';
 
 export type Time = bigint;
-export interface WaitlistEntry { 'joinedAt' : Time, 'email' : string }
+export interface UserProfile { 'name' : string, 'email' : [] | [string] }
+export type UserRole = { 'admin' : null } |
+  { 'user' : null } |
+  { 'guest' : null };
+export interface WaitlistEntry {
+  'name' : string,
+  'joinedAt' : Time,
+  'email' : string,
+  'company' : [] | [string],
+}
 export interface _SERVICE {
-  'addEntry' : ActorMethod<[string], undefined>,
+  '_initializeAccessControlWithSecret' : ActorMethod<[string], undefined>,
+  'addEntry' : ActorMethod<[string, [] | [string], string], undefined>,
+  'assignCallerUserRole' : ActorMethod<[Principal, UserRole], undefined>,
   'getAllEntries' : ActorMethod<[], Array<WaitlistEntry>>,
+  'getCallerUserProfile' : ActorMethod<[], [] | [UserProfile]>,
+  'getCallerUserRole' : ActorMethod<[], UserRole>,
+  'getOwner' : ActorMethod<[], [] | [Principal]>,
+  'getUserProfile' : ActorMethod<[Principal], [] | [UserProfile]>,
   'getWaitlistCount' : ActorMethod<[], bigint>,
+  'isCallerAdmin' : ActorMethod<[], boolean>,
+  'isOwnerSet' : ActorMethod<[], boolean>,
+  'saveCallerUserProfile' : ActorMethod<[UserProfile], undefined>,
 }
 export declare const idlService: IDL.ServiceClass;
 export declare const idlInitArgs: IDL.Type[];

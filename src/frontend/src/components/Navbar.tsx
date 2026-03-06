@@ -1,13 +1,14 @@
 import { Button } from "@/components/ui/button";
-import { Menu, X } from "lucide-react";
+import { Menu, Shield, X } from "lucide-react";
 import { motion } from "motion/react";
 import { useEffect, useState } from "react";
 
 interface NavbarProps {
   onJoinWaitlist: () => void;
+  onAdminClick: () => void;
 }
 
-export function Navbar({ onJoinWaitlist }: NavbarProps) {
+export function Navbar({ onJoinWaitlist, onAdminClick }: NavbarProps) {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
 
@@ -59,8 +60,19 @@ export function Navbar({ onJoinWaitlist }: NavbarProps) {
             ))}
           </nav>
 
-          {/* CTA */}
+          {/* CTA + Admin */}
           <div className="hidden md:flex items-center gap-3">
+            {/* Admin button — subtle ghost style */}
+            <button
+              type="button"
+              data-ocid="admin.open_modal_button"
+              onClick={onAdminClick}
+              className="inline-flex items-center gap-1.5 px-3 h-9 rounded-lg font-body text-xs font-medium border border-[oklch(0.32_0.05_240_/_0.45)] text-[oklch(0.58_0.05_240)] hover:text-[oklch(0.78_0.18_195)] hover:border-[oklch(0.78_0.18_195_/_0.4)] hover:bg-[oklch(0.78_0.18_195_/_0.06)] transition-all duration-200"
+            >
+              <Shield className="h-3.5 w-3.5" />
+              Admin
+            </button>
+
             <Button
               data-ocid="nav.primary_button"
               onClick={onJoinWaitlist}
@@ -113,6 +125,20 @@ export function Navbar({ onJoinWaitlist }: NavbarProps) {
           >
             Join Waitlist
           </Button>
+
+          {/* Admin link — bottom of mobile menu */}
+          <button
+            type="button"
+            data-ocid="admin.open_modal_button"
+            onClick={() => {
+              setMenuOpen(false);
+              onAdminClick();
+            }}
+            className="inline-flex items-center gap-2 w-full mt-2 py-2.5 text-sm font-body font-medium text-muted-foreground hover:text-[oklch(0.78_0.18_195)] transition-colors"
+          >
+            <Shield className="h-4 w-4" />
+            Admin Panel
+          </button>
         </motion.div>
       )}
     </motion.header>
