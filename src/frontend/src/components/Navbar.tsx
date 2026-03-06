@@ -40,7 +40,7 @@ export function Navbar({ onJoinWaitlist, onAdminClick }: NavbarProps) {
           {/* Logo */}
           <a href="#top" className="flex items-center">
             <img
-              src="/assets/uploads/Oneprompt.ai-LogoSite-1.png"
+              src="/assets/uploads/Oneprompt.ai-LogoSite-1-1.png"
               alt="OnePrompt.ai"
               className="h-20 w-auto object-contain"
             />

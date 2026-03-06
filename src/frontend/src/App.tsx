@@ -691,7 +691,7 @@ export default function App() {
             {/* Logo */}
             <div className="flex items-center gap-3">
               <img
-                src="/assets/uploads/Oneprompt.ai-LogoSite-1.png"
+                src="/assets/uploads/Oneprompt.ai-LogoSite-1-1.png"
                 alt="OnePrompt.ai"
                 className="h-8 w-auto object-contain"
               />
