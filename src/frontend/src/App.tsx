@@ -22,6 +22,8 @@ import {
 } from "lucide-react";
 import { motion } from "motion/react";
 import { useState } from "react";
+import logoImg from "/assets/uploads/Oneprompt.ai-LogoSite-1-1.png";
+import dashboardImg from "/assets/uploads/dashboard-preview.dim_1200x750-1-1.png";
 
 const MAX_SPOTS = 500;
 
@@ -483,7 +485,7 @@ export default function App() {
                 </div>
                 {/* Screenshot */}
                 <img
-                  src="/assets/uploads/dashboard-preview.dim_1200x750-1.png"
+                  src={dashboardImg}
                   alt="OnePrompt.ai dashboard"
                   className="w-full block"
                   loading="lazy"
@@ -691,7 +693,7 @@ export default function App() {
             {/* Logo */}
             <div className="flex items-center gap-3">
               <img
-                src="/assets/uploads/Oneprompt.ai-LogoSite-1-1.png"
+                src={logoImg}
                 alt="OnePrompt.ai"
                 className="h-8 w-auto object-contain"
               />

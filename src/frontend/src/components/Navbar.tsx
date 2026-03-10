@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Menu, Shield, X } from "lucide-react";
 import { motion } from "motion/react";
 import { useEffect, useState } from "react";
+import logoImg from "/assets/uploads/Oneprompt.ai-LogoSite-1-1.png";
 
 interface NavbarProps {
   onJoinWaitlist: () => void;
@@ -40,7 +41,7 @@ export function Navbar({ onJoinWaitlist, onAdminClick }: NavbarProps) {
           {/* Logo */}
           <a href="#top" className="flex items-center">
             <img
-              src="/assets/uploads/Oneprompt.ai-LogoSite-1-1.png"
+              src={logoImg}
               alt="OnePrompt.ai"
               className="h-20 w-auto object-contain"
             />

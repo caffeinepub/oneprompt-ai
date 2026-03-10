@@ -51,12 +51,8 @@ actor {
     userProfiles.add(caller, profile);
   };
 
-  // Add new entry to waitlist - requires user role
+  // Add new entry to waitlist - open to anyone (no auth required)
   public shared ({ caller }) func addEntry(name : Text, company : ?Text, email : Text) : async () {
-    if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
-      Runtime.trap("Unauthorized: Only users can join the waitlist");
-    };
-
     switch (entries.get(email)) {
       case (null) {
         let newEntry : WaitlistEntry = {
@@ -78,17 +74,13 @@ actor {
     entries.size();
   };
 
-  // Public query - returns whether an admin has been initialized
+  // Public query - returns whether any admin has been initialized in the system
   public query ({ caller }) func isOwnerSet() : async Bool {
-    // Check if there's at least one admin in the system
-    AccessControl.hasPermission(accessControlState, caller, #admin) or
-    AccessControl.isAdmin(accessControlState, caller);
+    accessControlState.adminAssigned;
   };
 
   // Public query - for compatibility, returns null (role-based system doesn't have single owner)
   public query ({ caller }) func getOwner() : async ?Principal {
-    // In role-based system, there's no single owner
-    // This is kept for API compatibility but returns null
     null;
   };
 
